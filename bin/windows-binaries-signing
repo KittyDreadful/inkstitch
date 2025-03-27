@@ -6,12 +6,12 @@ else
     SIGNING_POLICY="test-signing"
 fi
 # upload artifact of inkstitch.exe
-upload_exe=$(curl -H "Authorization: Bearer $secrets.SIGNPATH_API_TOKEN" \
+upload_exe=$( curl -H "Authorization: Bearer $secrets.SIGNPATH_API_TOKEN" \
      -F "ProjectSlug=inkstitch" \
      -F "SigningPolicySlug=$SIGNING_POLICY" \
      -F "Artifact=@dist/inkstitch/bin/inkstitch.exe" \
-     https://app.signpath.io/API/v1/6b880880-2af8-4cf3-a8e7-1b4977c593df/SigningRequests)
-echo ${upload_exe[*]}
+     https://app.signpath.io/API/v1/6b880880-2af8-4cf3-a8e7-1b4977c593df/SigningRequests )
+echo $upload_exe
 # create directory for zip and installer build
 mkdir signed-artifact
 
