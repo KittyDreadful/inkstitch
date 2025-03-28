@@ -51,7 +51,7 @@ jobs:
           python -m pip debug
 
           python -m pip install pycairo
-          python -m pip install PyGObject==3.50.0
+          python -m pip install PyGObject
 
           python -m pip install https://extras.wxpython.org/wxPython4/extras/linux/gtk3/ubuntu-20.04/wxPython-4.2.2-cp39-cp39-linux_x86_64.whl
 
@@ -62,20 +62,18 @@ jobs:
 
           python -m pip install pyinstaller
 
+          # scipy gives us a ELF error when stripped
+          sudo apt-get install gcc g++ gfortran python3-dev libopenblas-dev liblapack-dev
+          python -m pip uninstall --yes scipy
+          python -m pip install scipy --no-binary scipy
+
           echo "${{ env.pythonLocation }}\bin" >> $GITHUB_PATH
       - shell: bash
         run: |
           bin/build-linux
-      - name: Tests
-        shell: bash
+      - shell: bash
         run: |
           pytest
-      - name: Mypy Type Checking
-        shell: bash
-        run: |
-          python -m pip install mypy
-          python -m mypy --output json | python .github/mypy-github-formatter
-        continue-on-error: true
       - shell: bash
         run: |
           make dist
@@ -116,7 +114,8 @@ jobs:
 
           # for shapely
           sudo apt install build-essential libgtk-3-dev libgeos-dev cmake
-
+          sudo apt install gcc g++ gfortran libopenblas-dev liblapack-dev
+  
           # for sigining
           sudo apt install rpm
 
@@ -126,7 +125,7 @@ jobs:
           python -m pip debug
 
           python -m pip install pycairo
-          python -m pip install PyGObject==3.50.0
+          python -m pip install PyGObject
 
           python -m pip install https://extras.wxpython.org/wxPython4/extras/linux/gtk3/ubuntu-24.04/wxPython-4.2.2-cp312-cp312-linux_x86_64.whl
 
@@ -137,17 +136,15 @@ jobs:
 
           python -m pip install pyinstaller
 
+          # scipy gives us a ELF error when stripped
+          sudo apt-get install gcc g++ gfortran python3-dev libopenblas-dev liblapack-dev
+          python -m pip uninstall --yes scipy
+          python -m pip install scipy --no-binary scipy
+
           echo "${{ env.pythonLocation }}\bin" >> $GITHUB_PATH
-      - name: Tests
-        shell: bash
+      - shell: bash
         run: |
           pytest
-      - name: Mypy Type Checking
-        shell: bash
-        run: |
-          python -m pip install mypy
-          python -m mypy --output json | python .github/mypy-github-formatter
-        continue-on-error: true
       - shell: bash
         run: |
           make dist
@@ -215,9 +212,7 @@ jobs:
 
           # for shapely
           apt-get install -y build-essential libgtk-3-dev libgeos-dev cmake
-
-          # for numpy
-          apt-get install -y libopenblas-dev liblapack-dev
+          apt-get install -y gcc g++ gfortran libopenblas-dev liblapack-dev
 
           # for signing rpm
           apt-get install -y rpm
@@ -285,8 +280,9 @@ jobs:
           # inkex has pillow as a requirement and defaults to the latest release.
           # for windows we need to pin to the latest possible version for 32 bit
           python -m pip install pillow==9.5.0
-          # Numpy version for older cpu compatibility
+          # Numpy and Scipy version for older cpu compatibility
           python -m pip install numpy==1.23.1
+          python -m pip install scipy==1.9.0
           pip install wxPython
           python -m pip install -r requirements.txt
           # for networkx
@@ -300,26 +296,69 @@ jobs:
         run: |
           SET BUILD32="1"
           bin\build-geos-win.cmd
-      - name: Tests
-        shell: bash
+      - shell: bash
         run: |
           pytest
-      - name: Mypy Type Checking
-        shell: bash
-        run: |
-          python -m pip install mypy
-          python -m mypy --output json | python .github/mypy-github-formatter
-        continue-on-error: true
-      - name: Running make dist
-        shell: bash
+      - shell: bash
         run: |
           make dist
         env:
           BUILD: windows
-      - name: signing windows binaries
+      - name: upload-unsigned-exe
+        id: upload-unsigned-exe
+        uses: actions/upload-artifact@v4
+        with:
+          name: inkstitch-windows32-exe
+          path: |
+            dist/inkstitch/bin/inkstitch.exe
+        - name: Set ID to release
+          if: ${{ startsWith(github.ref, 'refs/tags/v*') }}
+          shell: bash
+          run: |
+             echo release_policy="release-signing" >> cGITHUB_ENV
+        - name: Set ID to test
+          if: ${{ ! startsWith(github.ref, 'refs/tags/v*') }}
+          shell: bash
+          run: |
+             echo release_policy="test-signing" >> $GITHUB_ENV
+      - name: Sign-exe
+        id: Sign-exe
+        uses: signpath/github-action-submit-signing-request@v1.1
+        with:
+          api-token: '${{ secrets.SIGNPATH_API_TOKEN }}'
+          organization-id: '6b880880-2af8-4cf3-a8e7-1b4977c593df'
+          project-slug: '${{ env.release_policy }}'
+          signing-policy-slug: 'test-signing'
+          github-artifact-id: '${{ steps.upload-unsigned-exe.outputs.artifact-id }}'
+          wait-for-completion: true
+          output-artifact-directory: 'signed-artifacts'
+      - name: Copy signed exe to dist
         shell: bash
         run: |
-          bash bin/windows-binaries-signing
+            mv  -f signed-artifacts/inkstitch.exe dist/inkstitch/bin/inkstitch.exe
+      - shell: bash
+        run: |
+          bash bin/build-windows-installer
+        env:
+          BUILD: windows
+      - name: upload-unsigned-installer
+        id: upload-unsigned-installer
+        uses: actions/upload-artifact@v4
+        with:
+          name: inkstitch-windows32-installer
+          path: artifacts
+      - name: Sign-installer
+        id: Sign-installer
+        uses: signpath/github-action-submit-signing-request@v1.1
+        with:
+          api-token: '${{ secrets.SIGNPATH_API_TOKEN }}'
+          organization-id: '6b880880-2af8-4cf3-a8e7-1b4977c593df'
+          project-slug: 'inkstitch'
+          signing-policy-slug: 'test-signing'
+          artifact-configuration-slug: 'windows-64bit-exe'
+          github-artifact-id: '${{ steps.upload-unsigned-installer.outputs.artifact-id }}'
+          wait-for-completion: true
+          output-artifact-directory: 'signed-artifacts'
       - uses: actions/upload-artifact@v4
         with:
           name: inkstitch-windows32
@@ -366,16 +405,9 @@ jobs:
         shell: cmd
         run: |
           bin\build-geos-win.cmd
-      - name: Tests
-        shell: bash
+      - shell: bash
         run: |
           pytest
-      - name: Mypy Type Checking
-        shell: bash
-        run: |
-          python -m pip install mypy
-          python -m mypy --output json | python .github/mypy-github-formatter
-        continue-on-error: true
       - shell: bash
         run: |
           make dist
@@ -421,9 +453,8 @@ jobs:
           api-token: '${{ secrets.SIGNPATH_API_TOKEN }}'
           organization-id: '6b880880-2af8-4cf3-a8e7-1b4977c593df'
           project-slug: 'inkstitch'
-          # set to test signing temporarily
           signing-policy-slug: 'test-signing'
-          artifact-configuration-slug: 'windows-installer-config'
+          artifact-configuration-slug: 'windows-64bit-exe'
           github-artifact-id: '${{ steps.upload-unsigned-installer.outputs.artifact-id }}'
           wait-for-completion: true
           output-artifact-directory: 'signed-artifacts'
@@ -473,16 +504,9 @@ jobs:
           pip install pyinstaller
 
           echo "${{ env.pythonLocation }}/bin" >> $GITHUB_PATH
-      - name: Tests
-        shell: bash
+      - shell: bash
         run: |
           pytest
-      - name: Mypy Type Checking
-        shell: bash
-        run: |
-          python -m pip install mypy
-          python -m mypy --output json | python .github/mypy-github-formatter
-        continue-on-error: true
       - shell: bash
         run: |
           make dist
@@ -542,16 +566,9 @@ jobs:
           pip install pyinstaller
 
           echo "${{ env.pythonLocation }}/bin" >> $GITHUB_PATH
-      - name: Tests
-        shell: bash
+      - shell: bash
         run: |
           pytest
-      - name: Mypy Type Checking
-        shell: bash
-        run: |
-          python -m pip install mypy
-          python -m mypy --output json | python .github/mypy-github-formatter
-        continue-on-error: true
       - shell: bash
         run: |
           make dist
