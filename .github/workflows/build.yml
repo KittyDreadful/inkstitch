@@ -311,16 +311,16 @@ jobs:
           name: inkstitch-windows32-exe
           path: |
             dist/inkstitch/bin/inkstitch.exe
-        - name: Set ID to release
-          if: ${{ startsWith(github.ref, 'refs/tags/v*') }}
-          shell: bash
-          run: |
-             echo release_policy="release-signing" >> cGITHUB_ENV
-        - name: Set ID to test
-          if: ${{ ! startsWith(github.ref, 'refs/tags/v*') }}
-          shell: bash
-          run: |
-             echo release_policy="test-signing" >> $GITHUB_ENV
+      - name: Set ID to release
+        if: ${{ startsWith(github.ref, 'refs/tags/v*') }}
+        shell: bash
+        run: |
+          echo release_policy="release-signing" >> cGITHUB_ENV
+      - name: Set ID to test
+        if: ${{ ! startsWith(github.ref, 'refs/tags/v*') }}
+        shell: bash
+        run: |
+          echo release_policy="test-signing" >> $GITHUB_ENV
       - name: Sign-exe
         id: Sign-exe
         uses: signpath/github-action-submit-signing-request@v1.1
