@@ -327,8 +327,8 @@ jobs:
         with:
           api-token: '${{ secrets.SIGNPATH_API_TOKEN }}'
           organization-id: '6b880880-2af8-4cf3-a8e7-1b4977c593df'
-          project-slug: '${{ env.release_policy }}'
-          signing-policy-slug: 'test-signing'
+          project-slug: 'inkstitch'
+          signing-policy-slug: '${{ env.release_policy }}'
           github-artifact-id: '${{ steps.upload-unsigned-exe.outputs.artifact-id }}'
           wait-for-completion: true
           output-artifact-directory: 'signed-artifacts'
