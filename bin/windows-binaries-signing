@@ -6,17 +6,17 @@ else
     SIGNING_POLICY="test-signing"
 fi
 # upload artifact of inkstitch.exe
-upload_exe=$( curl -H "Authorization: Bearer $secrets.SIGNPATH_API_TOKEN" \
+upload_exe=$( curl -H "Authorization: Bearer "$secrets.SIGNPATH_API_TOKEN"" \
      -F "ProjectSlug=inkstitch" \
-     -F "SigningPolicySlug=$SIGNING_POLICY" \
+     -F "SigningPolicySlug="$SIGNING_POLICY"" \
      -F "Artifact=@dist/inkstitch/bin/inkstitch.exe" \
      https://app.signpath.io/API/v1/6b880880-2af8-4cf3-a8e7-1b4977c593df/SigningRequests )
-echo $upload_exe
+echo ${upload_exe[*]}
 # create directory for zip and installer build
 mkdir signed-artifact
 
 # download of signed inkstitch.exe 
-curl -H "Authorization: Bearer $secrets.SIGNPATH_API_TOKEN" \
+curl -H "Authorization: Bearer "$secrets.SIGNPATH_API_TOKEN"" \
     -o signed-artifacts \
     https://app.signpath.io/API/v1/6b880880-2af8-4cf3-a8e7-1b4977c593df/SigningRequests/$upload_exe/SignedArtifact
 
@@ -27,9 +27,9 @@ mv  -f signed-artifacts/inkstitch.exe dist/inkstitch/bin/inkstitch.exe
 bash bin/build-windows-installer
 
 # upload artifact of inkstitch installer
-upload_installer=$(curl -H "Authorization: Bearer $secrets.SIGNPATH_API_TOKEN" \
+upload_installer=$(curl -H "Authorization: Bearer "$secrets.SIGNPATH_API_TOKEN"" \
      -F "ProjectSlug=inkstitch" \
-     -F "SigningPolicySlug=$SIGNING_POLICY" \
+     -F "SigningPolicySlug="$SIGNING_POLICY"" \
      -F "ArtifactConfigurationSlug=windows-installer-config" \
      -F "Artifact=@artifacts" \
      https://app.signpath.io/API/v1/6b880880-2af8-4cf3-a8e7-1b4977c593df/SigningRequests)
