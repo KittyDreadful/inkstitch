@@ -311,12 +311,12 @@ jobs:
           name: inkstitch-windows32-exe
           path: |
             dist/inkstitch/bin/inkstitch.exe
-      - name: Set ID to release
+      - name: Set siging policy to release
         if: ${{ startsWith(github.ref, 'refs/tags/v*') }}
         shell: bash
         run: |
           echo release_policy="release-signing" >> cGITHUB_ENV
-      - name: Set ID to test
+      - name: Set siging policy to test
         if: ${{ ! startsWith(github.ref, 'refs/tags/v*') }}
         shell: bash
         run: |
@@ -413,12 +413,12 @@ jobs:
           make dist
         env:
           BUILD: windows
-      - name: Set ID to release
+      - name: Set siging policy to release
         if: ${{ startsWith(github.ref, 'refs/tags/v*') }}
         shell: bash
         run: |
           echo release_policy="release-signing" >> cGITHUB_ENV
-      - name: Set ID to test
+      - name: Set siging policy to test
         if: ${{ ! startsWith(github.ref, 'refs/tags/v*') }}
         shell: bash
         run: |
