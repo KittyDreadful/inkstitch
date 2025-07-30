@@ -176,7 +176,6 @@ def init_debugger(debug_type:str,  ini: dict):
                 if wait_attach:
                     print("Waiting for debugger attach", file=sys.stderr)
                     debugpy.wait_for_client()        # wait for debugger to attach
-                    debugpy.breakpoint()             # stop here to start normal debugging
             elif debugger == 'pycharm':
                 pydevd_pycharm.settrace('localhost', port=5678, stdoutToServer=True,
                                         stderrToServer=True)
