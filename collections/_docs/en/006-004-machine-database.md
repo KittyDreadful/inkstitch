@@ -23,15 +23,11 @@ machine-database:
       comments: soon
   - brand: Brother
     machines:
-    - name: Test
-      file-formats: keine
-      features: TRIM, STOP
-      comments: blubber
-    - name: Huhu
-      file-formats: PES, PEC, DST
-      features:
-      inkstitch-version: 1.27.2
-      comments: Supi
+    - name: Innov-is F560
+      file-formats: PMV
+      features: My Custom Stitch
+      inkstitch-version: 3.2.2
+      comments: Minor issues with stitch count, alignment, and scale but can be worked around.<br><a href="https://github.com/inkstitch/inkstitch/pull/3929#issuecomment-3211128167]">More information</a>
     - name: PE-800
       file-formats: PES, PEC, DST
       features:
