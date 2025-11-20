@@ -1,3 +1,8 @@
+---
+title: Inkstitch main page
+description: A description of the software
+date: 2025-11-19
+---
 # Ink/Stitch: An open source machine embroidery design platform based on Inkscape
 
 Want to design embroidery pattern files (PES, DST, and many more) using **free, open source software?**
