@@ -5,19 +5,19 @@ date: 2025-11-19
 ---
 # Ink/Stitch: An open source machine embroidery design platform based on Inkscape
 
-Want to design embroidery pattern files (PES, DST, and many more) using **free, open source software?**
+Want to design embroidery pattern files (PES, DST, and more) using **free, open source software?**
 
 ![Ink/Stitch Logo](images/logos/inkstitch_colour_logo.svg)
 
-Ink/Stitch aims to be a full-fledged embroidery digitizing platform based entirely on free, open source software.  Our goal is to be approachable for hobbyists while also providing the power needed by professional digitizers.  We also aim to provide a welcoming open source environment where contributing is fun and easy.
+Ink/Stitch is designed to be a complete embroidery-digitizing platform built entirely on free, open-source software. Our mission is to make powerful digitizing tools accessible to hobbyists while still meeting the needs of professional creators. We’re also committed to fostering an open, welcoming community where contributing is easy and enjoyable.
 
-Want to learn more?
+Want to explore more?
 
-* Check out our list of [features](https://inkstitch.org/features/)
-* [Quick Install](https://inkstitch.org/docs/install/) on Linux, Windows and Mac
-* See some [photos](https://inkstitch.org/tutorials/inspiration/) showing what Ink/Stitch can do
-* Watch some [videos](https://inkstitch.org/tutorials/video/) of Ink/Stitch in action
-* ...and lots more on our [website](https://inkstitch.org)
+* Browse our full list of [features](https://inkstitch.org/features/)
+* Follow the [Quick Install guide](https://inkstitch.org/docs/install/) for Linux, Windows, or Mac
+* Check out [photos](https://inkstitch.org/tutorials/inspiration/) showing what Ink/Stitch can do
+* Watch  [videos](https://inkstitch.org/tutorials/video/) of Ink/Stitch in action
+* ...and discover more on our [website](https://inkstitch.org)
 
 Need help?
 
